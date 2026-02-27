@@ -49,12 +49,43 @@ export function savePrices(prices) {
 
 /* ── Company ──────────────────────────────── */
 
+const COMPANY_DEFAULTS = {
+  name: '',
+  address: '',
+  phone: '',
+  email: '',
+  website: '',
+};
+
+export function loadCompanyInfo() {
+  try {
+    const raw = localStorage.getItem(KEYS.COMPANY);
+    if (!raw) return { ...COMPANY_DEFAULTS };
+    const parsed = JSON.parse(raw);
+    return { ...COMPANY_DEFAULTS, ...parsed };
+  } catch {
+    // migrate legacy string value
+    const legacy = localStorage.getItem(KEYS.COMPANY);
+    if (legacy && typeof legacy === 'string') {
+      return { ...COMPANY_DEFAULTS, name: legacy };
+    }
+    return { ...COMPANY_DEFAULTS };
+  }
+}
+
+export function saveCompanyInfo(info) {
+  localStorage.setItem(KEYS.COMPANY, JSON.stringify(info));
+}
+
+/* legacy compat */
 export function loadCompany() {
-  return localStorage.getItem(KEYS.COMPANY) || '';
+  return loadCompanyInfo().name;
 }
 
 export function saveCompany(name) {
-  localStorage.setItem(KEYS.COMPANY, name);
+  const info = loadCompanyInfo();
+  info.name = name;
+  saveCompanyInfo(info);
 }
 
 /* ── Header Image ─────────────────────────── */

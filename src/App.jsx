@@ -30,7 +30,7 @@ export default function App() {
   }
 
   function handlePDF() {
-    generatePDF(estimate.state, estimate.prices, admin.company, admin.headerImage);
+    generatePDF(estimate.state, estimate.prices, admin.companyInfo, admin.headerImage);
   }
 
   function handleExcel() {

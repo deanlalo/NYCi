@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { getPrices, updatePrice } from '../utils/prices';
 import {
-  loadCompany,
-  saveCompany,
+  loadCompanyInfo,
+  saveCompanyInfo,
   loadHeader,
   saveHeader,
   removeHeader as removeHeaderStorage,
@@ -15,7 +15,7 @@ export function useAdmin() {
   const [isOpen, setIsOpen] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [prices, setPrices] = useState(getPrices);
-  const [company, setCompany] = useState(loadCompany);
+  const [companyInfo, setCompanyInfo] = useState(loadCompanyInfo);
   const [headerImage, setHeaderImage] = useState(loadHeader);
 
   const open = useCallback(() => setIsOpen(true), []);
@@ -38,9 +38,12 @@ export function useAdmin() {
     setPrices({ ...updated });
   }, []);
 
-  const handleUpdateCompany = useCallback((name) => {
-    setCompany(name);
-    saveCompany(name);
+  const handleUpdateCompanyInfo = useCallback((updates) => {
+    setCompanyInfo((prev) => {
+      const next = { ...prev, ...updates };
+      saveCompanyInfo(next);
+      return next;
+    });
   }, []);
 
   const handleUploadHeader = useCallback((file) => {
@@ -62,13 +65,13 @@ export function useAdmin() {
     isOpen,
     isUnlocked,
     prices,
-    company,
     headerImage,
     open,
     close,
     verifyPin,
     updatePrice: handleUpdatePrice,
-    updateCompany: handleUpdateCompany,
+    companyInfo,
+    updateCompanyInfo: handleUpdateCompanyInfo,
     uploadHeader: handleUploadHeader,
     removeHeader: handleRemoveHeader,
   };

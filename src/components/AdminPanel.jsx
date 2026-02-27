@@ -8,12 +8,12 @@ export default function AdminPanel({ admin }) {
   const {
     isUnlocked,
     prices,
-    company,
+    companyInfo,
     headerImage,
     close,
     verifyPin,
     updatePrice,
-    updateCompany,
+    updateCompanyInfo,
     uploadHeader,
     removeHeader,
   } = admin;
@@ -69,14 +69,53 @@ export default function AdminPanel({ admin }) {
             </div>
 
             <div className="admin-body">
-              {/* Company Name */}
+              {/* Company Info */}
               <div className="form-group">
                 <label>Company Name</label>
                 <input
                   type="text"
-                  value={company}
-                  onChange={(e) => updateCompany(e.target.value)}
+                  value={companyInfo.name}
+                  onChange={(e) => updateCompanyInfo({ name: e.target.value })}
                   placeholder="Your company name"
+                />
+              </div>
+              <div className="form-group">
+                <label>Mailing Address</label>
+                <input
+                  type="text"
+                  value={companyInfo.address}
+                  onChange={(e) => updateCompanyInfo({ address: e.target.value })}
+                  placeholder="P.O. Box 1475, New York, NY 10028"
+                />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Phone</label>
+                  <input
+                    type="tel"
+                    inputMode="tel"
+                    value={companyInfo.phone}
+                    onChange={(e) => updateCompanyInfo({ phone: e.target.value })}
+                    placeholder="+1(917)565-0579"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    value={companyInfo.email}
+                    onChange={(e) => updateCompanyInfo({ email: e.target.value })}
+                    placeholder="info@yourcompany.com"
+                  />
+                </div>
+              </div>
+              <div className="form-group" style={{ marginBottom: 20 }}>
+                <label>Website</label>
+                <input
+                  type="text"
+                  value={companyInfo.website}
+                  onChange={(e) => updateCompanyInfo({ website: e.target.value })}
+                  placeholder="www.yourcompany.com"
                 />
               </div>
 

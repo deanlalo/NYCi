@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="32" fill="#e02020"/>
+  <text x="96" y="85" font-family="sans-serif" font-size="48" font-weight="700" fill="#fff" text-anchor="middle">LV</text>
+  <text x="96" y="130" font-family="sans-serif" font-size="24" font-weight="400" fill="rgba(255,255,255,0.8)" text-anchor="middle">EST</text>
+</svg>

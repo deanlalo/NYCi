@@ -3,16 +3,16 @@ import 'jspdf-autotable';
 import { getItemPrice, getItemName, formatCurrency } from './prices';
 
 /*
- * PDF Template — modeled after the NYC Intercom "Lady D" project agreement.
+ * Full Proposal PDF — narrative style, no line-item tables.
  *
  * Layout per page:
- *   • Top-right: company logo/name + address + phone + email + website
- *   • Bottom: company name left, page # right, thin rule
+ *   • Top-right: company logo/name + contact info
+ *   • Bottom: company name left, page # right
  *
  * Document flow:
  *   1. Title block: "Project Agreement" + client/project info + date
- *   2. Per-floor scope sections with equipment tables
- *   3. Pricing summary table (per-scope subtotals → grand total)
+ *   2. Per-scope narrative descriptions (prose summaries of work)
+ *   3. Pricing summary table (scope subtotals → grand total)
  *   4. Payment schedule (50 / 30 / 15 / 5)
  *   5. General Terms & Conditions
  *   6. Reference documents
@@ -152,7 +152,7 @@ export function generatePDF(state, prices, companyInfo, headerImage) {
 
   y = doc.lastAutoTable.finalY + 16;
 
-  /* ━━ SCOPE SECTIONS (one per floor) ━━━━━ */
+  /* ━━ SCOPE SECTIONS — narrative style ━━━━ */
 
   let grandTotal = 0;
   const floorTotals = [];
@@ -164,56 +164,49 @@ export function generatePDF(state, prices, companyInfo, headerImage) {
     const scopeLabel = `Scope ${scopeNum}: ${floor.label || 'Unnamed Floor'}`;
     y = sectionTitle(scopeLabel, y);
 
+    const floorTotal = floor.items.reduce(
+      (s, item) => s + getItemPrice(item, prices) * item.qty,
+      0
+    );
+    grandTotal += floorTotal;
+    floorTotals.push({ label: floor.label || `Floor ${fi + 1}`, total: floorTotal });
+
     if (floor.items.length > 0) {
-      const rows = floor.items.map((item) => {
+      /* Build a narrative paragraph from the items */
+      const itemSummaries = floor.items.map((item) => {
         const name = getItemName(item);
-        const unit = getItemPrice(item, prices);
-        const total = unit * item.qty;
-        return [String(item.qty), name, formatCurrency(unit), formatCurrency(total)];
+        const qty = item.qty;
+        return `${qty} × ${name}`;
       });
 
-      const floorTotal = floor.items.reduce(
-        (s, item) => s + getItemPrice(item, prices) * item.qty,
-        0
-      );
-      grandTotal += floorTotal;
-      floorTotals.push({ label: floor.label || `Floor ${fi + 1}`, total: floorTotal });
+      const narrative =
+        companyName +
+        ' shall furnish and install the following for ' +
+        (floor.label || 'this scope') +
+        ': ' +
+        itemSummaries.join(', ') +
+        '. This includes all necessary labor, materials, configuration, and programming to deliver a fully operational system.';
 
-      doc.autoTable({
-        startY: y,
-        head: [['Qty', 'Item', 'Unit Price', 'Total']],
-        body: rows,
-        foot: [['', '', 'Subtotal', formatCurrency(floorTotal)]],
-        margin: { left: m, right: m },
-        styles: { fontSize: 10, cellPadding: 4 },
-        headStyles: {
-          fillColor: [15, 15, 15],
-          textColor: 255,
-          fontStyle: 'bold',
-          fontSize: 9,
-        },
-        footStyles: {
-          fillColor: [245, 245, 245],
-          textColor: [15, 15, 15],
-          fontStyle: 'bold',
-        },
-        columnStyles: {
-          0: { halign: 'center', cellWidth: 18 },
-          1: { cellWidth: 'auto' },
-          2: { halign: 'right', cellWidth: 32 },
-          3: { halign: 'right', cellWidth: 32 },
-        },
-        theme: 'grid',
-      });
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(40);
+      const lines = doc.splitTextToSize(narrative, pw - 2 * m);
+      y = needsNewPage(y, lines.length * 5 + 20);
+      doc.text(lines, m, y);
+      y += lines.length * 5 + 6;
 
-      y = doc.lastAutoTable.finalY + 14;
+      /* Scope total — right-aligned */
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(0);
+      doc.text(`Scope ${scopeNum} Total: ${formatCurrency(floorTotal)}`, pw - m, y, { align: 'right' });
+      doc.setTextColor(0);
+      y += 14;
     } else {
       doc.setFontSize(10);
       doc.setFont('helvetica', 'italic');
       doc.setTextColor(140);
-      doc.text('No items in this scope.', m, y);
+      doc.text('Scope to be determined.', m, y);
       doc.setTextColor(0);
-      floorTotals.push({ label: floor.label || `Floor ${fi + 1}`, total: 0 });
       y += 14;
     }
   });

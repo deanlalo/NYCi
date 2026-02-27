@@ -1,6 +1,7 @@
 import { useEstimate } from './hooks/useEstimate';
 import { useAdmin } from './hooks/useAdmin';
 import { generatePDF } from './utils/pdfExport';
+import { generateItemizedPDF } from './utils/pdfItemized';
 import { generateExcel } from './utils/excelExport';
 
 import TopBar from './components/TopBar';
@@ -29,8 +30,12 @@ export default function App() {
     estimate.newEstimate();
   }
 
-  function handlePDF() {
+  function handleProposalPDF() {
     generatePDF(estimate.state, estimate.prices, admin.companyInfo, admin.headerImage);
+  }
+
+  function handleItemizedPDF() {
+    generateItemizedPDF(estimate.state, estimate.prices, admin.companyInfo, admin.headerImage);
   }
 
   function handleExcel() {
@@ -88,7 +93,11 @@ export default function App() {
             onRemove={estimate.removeAttachment}
           />
 
-          <GenerateButtons onPDF={handlePDF} onExcel={handleExcel} />
+          <GenerateButtons
+            onProposalPDF={handleProposalPDF}
+            onItemizedPDF={handleItemizedPDF}
+            onExcel={handleExcel}
+          />
         </main>
 
         <SummaryDrawer
@@ -96,7 +105,8 @@ export default function App() {
           prices={estimate.prices}
           grandTotal={estimate.grandTotal}
           getFloorTotal={estimate.getFloorTotal}
-          onPDF={handlePDF}
+          onProposalPDF={handleProposalPDF}
+          onItemizedPDF={handleItemizedPDF}
           onExcel={handleExcel}
         />
       </div>

@@ -5,7 +5,7 @@ import {
   formatCurrency,
 } from '../utils/prices';
 
-function SummaryContent({ state, prices, grandTotal, getFloorTotal, onPDF, onExcel }) {
+function SummaryContent({ state, prices, grandTotal, getFloorTotal, onProposalPDF, onItemizedPDF, onExcel }) {
   const address = state.project.address || 'Untitled Project';
   const constructionLabel =
     state.project.constructionType === 'ground-up'
@@ -53,11 +53,14 @@ function SummaryContent({ state, prices, grandTotal, getFloorTotal, onPDF, onExc
       <div className="summary-divider" />
 
       <div className="summary-buttons">
-        <button className="btn btn-primary" onClick={onPDF}>
-          Download PDF
+        <button className="btn btn-primary" onClick={onProposalPDF}>
+          Full Proposal PDF
+        </button>
+        <button className="btn btn-outline" onClick={onItemizedPDF}>
+          Itemized Estimate
         </button>
         <button className="btn btn-outline" onClick={onExcel}>
-          Download Excel
+          Excel Export
         </button>
       </div>
     </>
@@ -69,7 +72,8 @@ export default function SummaryDrawer({
   prices,
   grandTotal,
   getFloorTotal,
-  onPDF,
+  onProposalPDF,
+  onItemizedPDF,
   onExcel,
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -83,7 +87,8 @@ export default function SummaryDrawer({
           prices={prices}
           grandTotal={grandTotal}
           getFloorTotal={getFloorTotal}
-          onPDF={onPDF}
+          onProposalPDF={onProposalPDF}
+          onItemizedPDF={onItemizedPDF}
           onExcel={onExcel}
         />
       </aside>
@@ -107,7 +112,8 @@ export default function SummaryDrawer({
               prices={prices}
               grandTotal={grandTotal}
               getFloorTotal={getFloorTotal}
-              onPDF={onPDF}
+              onProposalPDF={onProposalPDF}
+              onItemizedPDF={onItemizedPDF}
               onExcel={onExcel}
             />
           </div>
